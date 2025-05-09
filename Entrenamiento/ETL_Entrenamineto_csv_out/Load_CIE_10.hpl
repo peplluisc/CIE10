@@ -1,0 +1,1206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+  <info>
+    <name>Load_CIE_10</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description/>
+    <extended_description/>
+    <pipeline_version/>
+    <pipeline_type>Normal</pipeline_type>
+    <parameters>
+    </parameters>
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <created_user>-</created_user>
+    <created_date>2025/03/12 13:22:17.044</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2025/03/12 13:22:17.044</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <order>
+    <hop>
+      <from>Litera &lt;&gt; Descripcion CIE</from>
+      <to>Descartes literal igual que cie</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>union tablas</from>
+      <to>Litera &lt;&gt; Descripcion CIE</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Errores</from>
+      <to>Dummy (do nothing)</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Dummy (do nothing)</from>
+      <to>Sin Error</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Dummy (do nothing)</from>
+      <to>ZT_DOCLIB_CIE10_ENTRENAMIENTO_LOG</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Litera &lt;&gt; Descripcion CIE</from>
+      <to>hombre=0 y mujer=0</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>hombre=0 y mujer=0</from>
+      <to>Descarte sin sexo CMDB</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Sin Error</from>
+      <to>Errores_pre_entrenamiento</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>CODIFICADOS</from>
+      <to>Group by</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Sin Error</from>
+      <to>Sort Campos</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Sort Campos</from>
+      <to>CODIFICADOS</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Group by</from>
+      <to>Filter rows 2</to>
+      <enabled>N</enabled>
+    </hop>
+    <hop>
+      <from>hombre=0 y mujer=0</from>
+      <to>Dummy (do nothing) 2</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Dummy (do nothing) 2</from>
+      <to>Errores</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Group by</from>
+      <to>ZT_DOCLIB_CIE10_ENTRENAMIENTO 2</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <transform>
+    <name>CODIFICADOS</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <compare>
+      <condition>
+        <conditions>
+</conditions>
+        <function>IS NOT NULL</function>
+        <leftvalue>CODIGO_CIE_ASIGNADO</leftvalue>
+        <negated>N</negated>
+        <operator>-</operator>
+      </condition>
+    </compare>
+    <send_true_to>Group by</send_true_to>
+    <attributes/>
+    <GUI>
+      <xloc>1392</xloc>
+      <yloc>304</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Descarte sin sexo CMDB</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+    <GUI>
+      <xloc>464</xloc>
+      <yloc>512</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Descartes literal igual que cie</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+    <GUI>
+      <xloc>224</xloc>
+      <yloc>512</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+    <GUI>
+      <xloc>864</xloc>
+      <yloc>304</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Dummy (do nothing) 2</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+    <GUI>
+      <xloc>640</xloc>
+      <yloc>304</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Errores</name>
+    <type>ScriptValueMod</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <optimizationLevel>9</optimizationLevel>
+    <jsScripts>
+      <jsScript>
+        <jsScript_type>0</jsScript_type>
+        <jsScript_name>Script 1</jsScript_name>
+        <jsScript_script>//Script here
+
+// Inicializamos los campos
+var error = 0;
+var error_descripcion = "";
+
+// Solo comprobamos si hay un CIE asignado
+if (CIE_ASIGNADO != null &amp;&amp; CIE_ASIGNADO.trim() != "") {
+
+  var errores = [];
+
+  // Validamos cada requisito del CIE con los datos del paciente
+  if (HOMBRE_REQUERIDO == 1 &amp;&amp; HOMBRE != 1) {
+    errores.push("CIE requiere hombre pero el paciente no es hombre");
+  }
+
+  if (MUJER_REQUERIDO == 1 &amp;&amp; MUJER != 1) {
+    errores.push("CIE requiere mujer pero el paciente no es mujer");
+  }
+
+  if (PERINATAL_REQUERIDO == 1 &amp;&amp; PERINATAL != 1) {
+    errores.push("CIE requiere perinatal pero el paciente no es perinatal");
+  }
+
+  if (PEDIATRICO_REQUERIDO == 1 &amp;&amp; PEDIATRICO != 1) {
+    errores.push("CIE requiere pediátrico pero el paciente no es pediátrico");
+  }
+
+  if (ADULTO_REQUERIDO == 1 &amp;&amp; ADULTO != 1) {
+    errores.push("CIE requiere adulto pero el paciente no es adulto");
+  }
+
+  // Si hay errores, marcamos el campo error y creamos la descripción
+  if (errores.length > 0) {
+    error = 1;
+    error_descripcion = errores.join("; ");
+  }
+}
+
+// Asignamos los campos de salida
+error = error;
+error_descripcion = error_descripcion;
+</jsScript_script>
+      </jsScript>
+    </jsScripts>
+    <fields>
+      <field>
+        <name>error</name>
+        <rename>error</rename>
+        <type>Number</type>
+        <length>16</length>
+        <precision>2</precision>
+        <replace>N</replace>
+      </field>
+      <field>
+        <name>error_descripcion</name>
+        <rename>error_descripcion</rename>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <replace>N</replace>
+      </field>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>768</xloc>
+      <yloc>176</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Errores_pre_entrenamiento</name>
+    <type>TextFileOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <separator>|</separator>
+    <enclosure>"</enclosure>
+    <enclosure_forced>N</enclosure_forced>
+    <enclosure_fix_disabled>Y</enclosure_fix_disabled>
+    <header>Y</header>
+    <footer>N</footer>
+    <format>DOS</format>
+    <compression>None</compression>
+    <encoding>UTF-8</encoding>
+    <endedLine/>
+    <fileNameInField>N</fileNameInField>
+    <fileNameField/>
+    <create_parent_folder>Y</create_parent_folder>
+    <file>
+      <name>C:\DADES\DOCLIB\CIE10\Errores_pre_entrenamiento</name>
+      <servlet_output>N</servlet_output>
+      <do_not_open_new_file_init>N</do_not_open_new_file_init>
+      <extention>csv</extention>
+      <append>N</append>
+      <split>N</split>
+      <haspartno>N</haspartno>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <SpecifyFormat>N</SpecifyFormat>
+      <date_time_format/>
+      <add_to_result_filenames>Y</add_to_result_filenames>
+      <pad>N</pad>
+      <fast_dump>N</fast_dump>
+      <splitevery/>
+    </file>
+    <fields>
+      <field>
+        <name>HOMBRE</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency>€</currency>
+        <decimal>.</decimal>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>MUJER</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency>€</currency>
+        <decimal>.</decimal>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>PERINATAL</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency>€</currency>
+        <decimal>.</decimal>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>PEDIATRICO</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency>€</currency>
+        <decimal>.</decimal>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>ADULTO</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency>€</currency>
+        <decimal>.</decimal>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>JUICIO_CLINICO</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>JUICIO_CLINICO_ENRIQUECIDO</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>CIE_ASIGNADO</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>HOMBRE_REQUERIDO</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency>€</currency>
+        <decimal>.</decimal>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>MUJER_REQUERIDO</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency>€</currency>
+        <decimal>.</decimal>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>PERINATAL_REQUERIDO</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency>€</currency>
+        <decimal>.</decimal>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>PEDIATRICO_REQUERIDO</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency>€</currency>
+        <decimal>.</decimal>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>ADULTO_REQUERIDO</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency>€</currency>
+        <decimal>.</decimal>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>ADULTO_REQUERIDO</name>
+        <type>None</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>HISTORIA</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>FILA</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency>€</currency>
+        <decimal>,</decimal>
+        <group>.</group>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>0</precision>
+      </field>
+      <field>
+        <name>FICHERO</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>error_descripcion</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>both</trim_type>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>1088</xloc>
+      <yloc>128</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Filter rows 2</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <compare>
+      <condition>
+        <conditions>
+          <condition>
+            <conditions>
+</conditions>
+            <function>=</function>
+            <leftvalue>CIE_ASIGNADO</leftvalue>
+            <negated>N</negated>
+            <operator>-</operator>
+            <value>
+              <isnull>N</isnull>
+              <length>-1</length>
+              <name>constant</name>
+              <precision>-1</precision>
+              <text>Trastorno de refracción no especificado</text>
+              <type>String</type>
+            </value>
+          </condition>
+          <condition>
+            <conditions>
+</conditions>
+            <function>=</function>
+            <leftvalue>CIE_ASIGNADO</leftvalue>
+            <negated>N</negated>
+            <operator>OR</operator>
+            <value>
+              <isnull>N</isnull>
+              <length>-1</length>
+              <name>constant</name>
+              <precision>-1</precision>
+              <text>Candidiasis de la piel y las uñas</text>
+              <type>String</type>
+            </value>
+          </condition>
+          <condition>
+            <conditions>
+</conditions>
+            <function>=</function>
+            <leftvalue>CIE_ASIGNADO</leftvalue>
+            <negated>N</negated>
+            <operator>OR</operator>
+            <value>
+              <isnull>N</isnull>
+              <length>-1</length>
+              <name>constant</name>
+              <precision>-1</precision>
+              <text>Amnesia global transitoria</text>
+              <type>String</type>
+            </value>
+          </condition>
+        </conditions>
+        <function>=</function>
+        <leftvalue>CIE_ASIGNADO</leftvalue>
+        <negated>N</negated>
+        <operator>-</operator>
+        <value>
+          <isnull>N</isnull>
+          <length>-1</length>
+          <name>constant</name>
+          <precision>-1</precision>
+          <text>Trastorno de refracción no especificado</text>
+          <type>String</type>
+        </value>
+      </condition>
+    </compare>
+    <send_true_to>Entrenamiento</send_true_to>
+    <attributes/>
+    <GUI>
+      <xloc>1760</xloc>
+      <yloc>128</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Group by</name>
+    <type>GroupBy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <add_linenr>N</add_linenr>
+    <all_rows>N</all_rows>
+    <directory>${java.io.tmpdir}</directory>
+    <fields>
+</fields>
+    <give_back_row>N</give_back_row>
+    <group>
+      <field>
+        <name>HOMBRE</name>
+      </field>
+      <field>
+        <name>MUJER</name>
+      </field>
+      <field>
+        <name>PERINATAL</name>
+      </field>
+      <field>
+        <name>PEDIATRICO</name>
+      </field>
+      <field>
+        <name>ADULTO</name>
+      </field>
+      <field>
+        <name>JUICIO_CLINICO</name>
+      </field>
+      <field>
+        <name>JUICIO_CLINICO_ENRIQUECIDO</name>
+      </field>
+      <field>
+        <name>CIE_ASIGNADO</name>
+      </field>
+      <field>
+        <name>HOMBRE_REQUERIDO</name>
+      </field>
+      <field>
+        <name>MUJER_REQUERIDO</name>
+      </field>
+      <field>
+        <name>PERINATAL_REQUERIDO</name>
+      </field>
+      <field>
+        <name>PEDIATRICO_REQUERIDO</name>
+      </field>
+      <field>
+        <name>ADULTO_REQUERIDO</name>
+      </field>
+    </group>
+    <ignore_aggregate>N</ignore_aggregate>
+    <prefix>grp</prefix>
+    <attributes/>
+    <GUI>
+      <xloc>1536</xloc>
+      <yloc>304</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Litera &lt;&gt; Descripcion CIE</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <compare>
+      <condition>
+        <conditions>
+</conditions>
+        <function>&lt;></function>
+        <leftvalue>JUICIO_CLINICO</leftvalue>
+        <negated>N</negated>
+        <operator>-</operator>
+        <rightvalue>CIE_ASIGNADO</rightvalue>
+      </condition>
+    </compare>
+    <send_false_to>Descartes literal igual que cie</send_false_to>
+    <send_true_to>hombre=0 y mujer=0</send_true_to>
+    <attributes/>
+    <GUI>
+      <xloc>224</xloc>
+      <yloc>304</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Sin Error</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <compare>
+      <condition>
+        <conditions>
+</conditions>
+        <function>=</function>
+        <leftvalue>error</leftvalue>
+        <negated>N</negated>
+        <operator>-</operator>
+        <value>
+          <isnull>N</isnull>
+          <length>-1</length>
+          <mask>####0.0#########;-####0.0#########</mask>
+          <name>constant</name>
+          <precision>-1</precision>
+          <text>0.0</text>
+          <type>Number</type>
+        </value>
+      </condition>
+    </compare>
+    <send_false_to>Errores_pre_entrenamiento</send_false_to>
+    <send_true_to>Sort Campos</send_true_to>
+    <attributes/>
+    <GUI>
+      <xloc>1088</xloc>
+      <yloc>304</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Sort Campos</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <directory>${java.io.tmpdir}</directory>
+    <prefix>out</prefix>
+    <sort_size>1000000</sort_size>
+    <free_memory/>
+    <compress>N</compress>
+    <compress_variable/>
+    <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>HOMBRE</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>MUJER</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>PERINATAL</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>PEDIATRICO</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>ADULTO</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>JUICIO_CLINICO</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>JUICIO_CLINICO_ENRIQUECIDO</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>CIE_ASIGNADO</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>HOMBRE_REQUERIDO</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>MUJER_REQUERIDO</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>PERINATAL_REQUERIDO</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>PEDIATRICO_REQUERIDO</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>ADULTO_REQUERIDO</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>1264</xloc>
+      <yloc>304</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>ZT_DOCLIB_CIE10_ENTRENAMIENTO 2</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <commit>1000</commit>
+    <connection>ZM</connection>
+    <fields>
+      <field>
+        <column_name>HOMBRE</column_name>
+        <stream_name>HOMBRE</stream_name>
+      </field>
+      <field>
+        <column_name>MUJER</column_name>
+        <stream_name>MUJER</stream_name>
+      </field>
+      <field>
+        <column_name>PERINATAL</column_name>
+        <stream_name>PERINATAL</stream_name>
+      </field>
+      <field>
+        <column_name>PEDIATRICO</column_name>
+        <stream_name>PEDIATRICO</stream_name>
+      </field>
+      <field>
+        <column_name>ADULTO</column_name>
+        <stream_name>ADULTO</stream_name>
+      </field>
+      <field>
+        <column_name>JUICIO_CLINICO</column_name>
+        <stream_name>JUICIO_CLINICO</stream_name>
+      </field>
+      <field>
+        <column_name>CIE_ASIGNADO</column_name>
+        <stream_name>CIE_ASIGNADO</stream_name>
+      </field>
+      <field>
+        <column_name>HOMBRE_REQUERIDO</column_name>
+        <stream_name>HOMBRE_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>MUJER_REQUERIDO</column_name>
+        <stream_name>MUJER_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>PERINATAL_REQUERIDO</column_name>
+        <stream_name>PERINATAL_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>PEDIATRICO_REQUERIDO</column_name>
+        <stream_name>PEDIATRICO_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>ADULTO_REQUERIDO</column_name>
+        <stream_name>ADULTO_REQUERIDO</stream_name>
+      </field>
+    </fields>
+    <ignore_errors>N</ignore_errors>
+    <only_when_have_rows>N</only_when_have_rows>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <return_field/>
+    <return_keys>N</return_keys>
+    <schema>ZM</schema>
+    <specify_fields>Y</specify_fields>
+    <table>ZT_DOCLIB_CIE10_ENTRENAMIENTO</table>
+    <tablename_field/>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_in_table>Y</tablename_in_table>
+    <truncate>N</truncate>
+    <use_batch>Y</use_batch>
+    <attributes/>
+    <GUI>
+      <xloc>1888</xloc>
+      <yloc>304</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>ZT_DOCLIB_CIE10_ENTRENAMIENTO_LOG</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <commit>1000</commit>
+    <connection>ZM</connection>
+    <fields>
+      <field>
+        <column_name>HOMBRE</column_name>
+        <stream_name>HOMBRE</stream_name>
+      </field>
+      <field>
+        <column_name>MUJER</column_name>
+        <stream_name>MUJER</stream_name>
+      </field>
+      <field>
+        <column_name>PERINATAL</column_name>
+        <stream_name>PERINATAL</stream_name>
+      </field>
+      <field>
+        <column_name>PEDIATRICO</column_name>
+        <stream_name>PEDIATRICO</stream_name>
+      </field>
+      <field>
+        <column_name>ADULTO</column_name>
+        <stream_name>ADULTO</stream_name>
+      </field>
+      <field>
+        <column_name>JUICIO_CLINICO</column_name>
+        <stream_name>JUICIO_CLINICO</stream_name>
+      </field>
+      <field>
+        <column_name>JUICIO_CLINICO_ENRIQUECIDO</column_name>
+        <stream_name>JUICIO_CLINICO_ENRIQUECIDO</stream_name>
+      </field>
+      <field>
+        <column_name>CIE_ASIGNADO</column_name>
+        <stream_name>CIE_ASIGNADO</stream_name>
+      </field>
+      <field>
+        <column_name>HOMBRE_REQUERIDO</column_name>
+        <stream_name>HOMBRE_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>MUJER_REQUERIDO</column_name>
+        <stream_name>MUJER_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>PERINATAL_REQUERIDO</column_name>
+        <stream_name>PERINATAL_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>PEDIATRICO_REQUERIDO</column_name>
+        <stream_name>PEDIATRICO_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>ADULTO_REQUERIDO</column_name>
+        <stream_name>ADULTO_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>HISTORIA</column_name>
+        <stream_name>HISTORIA</stream_name>
+      </field>
+      <field>
+        <column_name>FILA</column_name>
+        <stream_name>FILA</stream_name>
+      </field>
+      <field>
+        <column_name>FICHERO</column_name>
+        <stream_name>FICHERO</stream_name>
+      </field>
+      <field>
+        <column_name>error_descripcion</column_name>
+        <stream_name>error_descripcion</stream_name>
+      </field>
+      <field>
+        <column_name>CODIGO_CIE_ASIGNADO</column_name>
+        <stream_name>CODIGO_CIE_ASIGNADO</stream_name>
+      </field>
+    </fields>
+    <ignore_errors>N</ignore_errors>
+    <only_when_have_rows>N</only_when_have_rows>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <return_keys>N</return_keys>
+    <schema>ZM</schema>
+    <specify_fields>Y</specify_fields>
+    <table>ZT_DOCLIB_CIE10_ENTRENAMIENTO_LOG</table>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_in_table>Y</tablename_in_table>
+    <truncate>Y</truncate>
+    <use_batch>Y</use_batch>
+    <attributes/>
+    <GUI>
+      <xloc>864</xloc>
+      <yloc>512</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>hombre=0 y mujer=0</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <compare>
+      <condition>
+        <conditions>
+          <condition>
+            <conditions>
+</conditions>
+            <function>=</function>
+            <leftvalue>HOMBRE</leftvalue>
+            <negated>N</negated>
+            <operator>-</operator>
+            <value>
+              <isnull>N</isnull>
+              <length>-1</length>
+              <mask>#</mask>
+              <name>constant</name>
+              <precision>0</precision>
+              <text>0</text>
+              <type>Integer</type>
+            </value>
+          </condition>
+          <condition>
+            <conditions>
+</conditions>
+            <function>=</function>
+            <leftvalue>MUJER</leftvalue>
+            <negated>N</negated>
+            <operator>AND</operator>
+            <value>
+              <isnull>N</isnull>
+              <length>-1</length>
+              <mask>#</mask>
+              <name>constant</name>
+              <precision>0</precision>
+              <text>0</text>
+              <type>Integer</type>
+            </value>
+          </condition>
+        </conditions>
+        <function>=</function>
+        <leftvalue>HOMBRE</leftvalue>
+        <negated>N</negated>
+        <operator>-</operator>
+        <value>
+          <isnull>N</isnull>
+          <length>-1</length>
+          <mask>#</mask>
+          <name>constant</name>
+          <precision>0</precision>
+          <text>1</text>
+          <type>Integer</type>
+        </value>
+      </condition>
+    </compare>
+    <send_false_to>Dummy (do nothing) 2</send_false_to>
+    <send_true_to>Descarte sin sexo CMDB</send_true_to>
+    <attributes/>
+    <GUI>
+      <xloc>464</xloc>
+      <yloc>304</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>union tablas</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>ZM</connection>
+    <execute_each_row>N</execute_each_row>
+    <limit/>
+    <sql>SELECT 
+    CASE WHEN TO_CHAR(c.sexo) = '1' THEN 1 ELSE 0 END AS HOMBRE,
+    CASE WHEN TO_CHAR(c.sexo) = '2' THEN 1 ELSE 0 END AS MUJER,
+    CASE WHEN TO_CHAR(c.STATUS_EDAD) = 'PERINATAL' THEN 1 ELSE 0 END AS PERINATAL,
+    CASE WHEN TO_CHAR(c.STATUS_EDAD) = 'PEDIATRICO' THEN 1 ELSE 0 END AS PEDIATRICO,
+    CASE WHEN TO_CHAR(c.STATUS_EDAD) = 'ADULTO' THEN 1 ELSE 0 END AS ADULTO,
+    R.literal_limpio AS JUICIO_CLINICO,
+    T1.DESCRIPCION_tratado AS CIE_ASIGNADO,
+    T1.CODIGO AS CODIGO_CIE_ASIGNADO,
+    NVL(T1.HOMBRE, 0) AS HOMBRE_REQUERIDO,
+    NVL(T1.MUJER, 0) AS MUJER_REQUERIDO,
+    NVL(T1.PERINATAL, 0) AS PERINATAL_REQUERIDO,
+    NVL(T1.PEDIATRICO, 0) AS PEDIATRICO_REQUERIDO,
+    NVL(T1.ADULTO, 0) AS ADULTO_REQUERIDO,
+    c.HISTORIA AS HISTORIA,
+    c.FILA AS FILA,
+    R.FICHERO AS FICHERO
+FROM 
+    ZM.ZT_DOCLIB_CIE10_REGISTROS_TRATADOS R
+LEFT JOIN 
+    ZM.ZT_DOCLIB_CIE10_CMDB c ON R.identificador = c.numepi
+LEFT JOIN 
+    ZM.ZT_DOCLIB_CIE10_TABLA_REFERENCIA T1 ON T1.CODIGO = R.CIE_1
+WHERE 
+    R.cie_1 IS NOT NULL
+</sql>
+    <variables_active>N</variables_active>
+    <attributes/>
+    <GUI>
+      <xloc>32</xloc>
+      <yloc>304</yloc>
+    </GUI>
+  </transform>
+  <transform_error_handling>
+  </transform_error_handling>
+  <attributes/>
+</pipeline>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+  <info>
+    <name>Load_CIE_10_Referencia</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description/>
+    <extended_description/>
+    <pipeline_version/>
+    <pipeline_type>Normal</pipeline_type>
+    <parameters>
+    </parameters>
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <created_user>-</created_user>
+    <created_date>2025/05/06 13:19:23.393</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2025/05/06 13:19:23.393</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <order>
+    <hop>
+      <from>Cross join table referencia</from>
+      <to>ZT_DOCLIB_CIE10_ENTRENAMIENTO 2</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <transform>
+    <name>Cross join table referencia</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>ZM</connection>
+    <execute_each_row>N</execute_each_row>
+    <limit>0</limit>
+    <sql>SELECT
+    t.HOMBRE HOMBRE_REQUERIDO,
+    t.MUJER MUJER_REQUERIDO,
+    t.ADULTO ADULTO_REQUERIDO,
+    t.PERINATAL PERINATAL_REQUERIDO,
+    t.PEDIATRICO PEDIATRICO_REQUERIDO,
+    t.CODIGO,
+    t.DESCRIPCION_TRATADO AS CIE_ASIGNADO,
+    t.DESCRIPCION_TRATADO AS JUICIO_CLINICO,
+    c.SEXO,
+    c.EDAD
+FROM ZM.ZT_DOCLIB_CIE10_TABLA_REFERENCIA t
+CROSS JOIN (
+    SELECT 'HOMBRE' AS SEXO, 'PERINATAL'  AS EDAD FROM DUAL
+    UNION ALL SELECT 'HOMBRE', 'PEDIATRICO'           FROM DUAL
+    UNION ALL SELECT 'HOMBRE', 'ADULTO'               FROM DUAL
+    UNION ALL SELECT 'MUJER',  'PERINATAL'            FROM DUAL
+    UNION ALL SELECT 'MUJER',  'PEDIATRICO'           FROM DUAL
+    UNION ALL SELECT 'MUJER',  'ADULTO'               FROM DUAL
+) c
+WHERE   
+    (
+          NVL(t.HOMBRE,0)+NVL(t.MUJER,0) = 0                -- sin restricción
+       OR (c.SEXO   = 'HOMBRE' AND NVL(t.HOMBRE,0) = 1)     -- solo hombre
+       OR (c.SEXO   = 'MUJER'  AND NVL(t.MUJER,0)  = 1)     -- solo mujer
+    )
+AND   
+    (
+          NVL(t.PERINATAL,0)+NVL(t.PEDIATRICO,0)+NVL(t.ADULTO,0) = 0  -- sin restricción
+       OR (c.EDAD = 'PERINATAL'  AND NVL(t.PERINATAL,0)  = 1)         -- solo perinatal
+       OR (c.EDAD = 'PEDIATRICO' AND NVL(t.PEDIATRICO,0) = 1)         -- solo pediátrico
+       OR (c.EDAD = 'ADULTO'     AND NVL(t.ADULTO,0)     = 1)         -- solo adulto
+    )
+ORDER BY t.CODIGO, c.SEXO, c.EDAD</sql>
+    <variables_active>N</variables_active>
+    <attributes/>
+    <GUI>
+      <xloc>208</xloc>
+      <yloc>224</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>ZT_DOCLIB_CIE10_ENTRENAMIENTO 2</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <commit>1000</commit>
+    <connection>ZM</connection>
+    <fields>
+      <field>
+        <column_name>HOMBRE</column_name>
+        <stream_name>HOMBRE</stream_name>
+      </field>
+      <field>
+        <column_name>MUJER</column_name>
+        <stream_name>MUJER</stream_name>
+      </field>
+      <field>
+        <column_name>PERINATAL</column_name>
+        <stream_name>PERINATAL</stream_name>
+      </field>
+      <field>
+        <column_name>PEDIATRICO</column_name>
+        <stream_name>PEDIATRICO</stream_name>
+      </field>
+      <field>
+        <column_name>ADULTO</column_name>
+        <stream_name>ADULTO</stream_name>
+      </field>
+      <field>
+        <column_name>JUICIO_CLINICO</column_name>
+        <stream_name>JUICIO_CLINICO</stream_name>
+      </field>
+      <field>
+        <column_name>CIE_ASIGNADO</column_name>
+        <stream_name>CIE_ASIGNADO</stream_name>
+      </field>
+      <field>
+        <column_name>HOMBRE_REQUERIDO</column_name>
+        <stream_name>HOMBRE_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>MUJER_REQUERIDO</column_name>
+        <stream_name>MUJER_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>PERINATAL_REQUERIDO</column_name>
+        <stream_name>PERINATAL_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>PEDIATRICO_REQUERIDO</column_name>
+        <stream_name>PEDIATRICO_REQUERIDO</stream_name>
+      </field>
+      <field>
+        <column_name>ADULTO_REQUERIDO</column_name>
+        <stream_name>ADULTO_REQUERIDO</stream_name>
+      </field>
+    </fields>
+    <ignore_errors>N</ignore_errors>
+    <only_when_have_rows>N</only_when_have_rows>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <return_field/>
+    <return_keys>N</return_keys>
+    <schema>ZM</schema>
+    <specify_fields>Y</specify_fields>
+    <table>ZT_DOCLIB_CIE10_ENTRENAMIENTO</table>
+    <tablename_field/>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_in_table>Y</tablename_in_table>
+    <truncate>Y</truncate>
+    <use_batch>Y</use_batch>
+    <attributes/>
+    <GUI>
+      <xloc>720</xloc>
+      <yloc>224</yloc>
+    </GUI>
+  </transform>
+  <transform_error_handling>
+  </transform_error_handling>
+  <attributes/>
+</pipeline>
