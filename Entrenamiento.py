@@ -7,103 +7,113 @@ import torch
 from tqdm.auto import tqdm
 import joblib
 import sys
+import os
 
-# Mostrar entorno de ejecución
 print("Python executable in use:", sys.executable)
 tqdm.pandas()
 
-# Fase 1: Carga de datos
-print("🚀 Iniciando carga de datos...")
-ruta_archivo = r"C:\DADES\DOCLIB\CIE10\Entrenamiento.csv"
+# Verificar si CUDA está disponible y mostrar si se está usando GPU o CPU en este caso una RTX3050
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+    print(f"CUDA disponible. Usando GPU: {torch.cuda.get_device_name(0)}")
+else:
+    device = torch.device("cpu")  # Esto es para verificar que se está utilizando la CPU del sistema
+    print("CUDA no disponible. Usando CPU.")
+
+print("Iniciando carga de datos...")
+ruta_archivo = r"C:\DADES\DOCLIB\CIE10\ENTRENAMIENTO\Entrenamiento.csv"
 df = pd.read_csv(ruta_archivo, sep="|")
 print("Columnas del DataFrame:", df.columns.tolist())
-print(f"✅ Datos cargados correctamente. Total de registros: {len(df)}")
+print(f"Datos cargados correctamente. Total de registros: {len(df)}")
 
-# Fase 2: Normalización del texto del criterio médico
-print("🧹 Normalizando texto del criterio médico...")
+print("Normalizando texto del criterio médico...")
 df["JUICIO_CLINICO_ENRIQUECIDO"] = df["JUICIO_CLINICO_ENRIQUECIDO"].astype(str)
-# Mantener letras acentuadas, ñ, ç
 df["texto_procesado"] = df["JUICIO_CLINICO_ENRIQUECIDO"].str.lower().str.replace(r"[^a-zA-Z0-9ñáéíóúüç\s]", "", regex=True)
 
-
-# Fase 3: Codificación de la variable objetivo
-print("🎯 Codificando variable objetivo...")
+print("Codificando variable objetivo...")
 df["CIE_ASIGNADO"] = df["CIE_ASIGNADO"].astype(str)
+df = df.dropna(subset=["CIE_ASIGNADO", "texto_procesado"])
 label_encoder = LabelEncoder()
 df["CIE_ASIGNADO_COD"] = label_encoder.fit_transform(df["CIE_ASIGNADO"])
 
-# Fase 4: Tokenización
-print("🧩 Preparando tokenizador BERT...")
-tokenizer = BertTokenizer.from_pretrained('C:\\DADES\\DOCLIB\\CIE10\\modelos\\bert-base-multilingual-cased')
+print("Validación de etiquetas antes del Dataset:")
+num_labels = len(label_encoder.classes_)
+max_label = df["CIE_ASIGNADO_COD"].max()
+min_label = df["CIE_ASIGNADO_COD"].min()
+print(f" - Clases únicas: {num_labels}")
+print(f" - Máxima etiqueta codificada: {max_label}")
+print(f" - Mínima etiqueta codificada: {min_label}")
+assert max_label < num_labels, f"ERROR: Etiqueta {max_label} fuera de rango ({num_labels - 1})"
+assert min_label >= 0, "ERROR: Hay etiquetas negativas"
 
+print("Preparando tokenizador BERT...")
+MODEL_PATH = 'C:\\DADES\\DOCLIB\\CIE10\\modelos\\bert-base-multilingual-cased'
+tokenizer = BertTokenizer.from_pretrained(MODEL_PATH)
 
 def tokenize_function(examples):
     return tokenizer(
         examples["texto_procesado"],
         padding="max_length",
         truncation=True,
-        max_length=256,
+        max_length=128,
     )
 
-print("🔄 Tokenizando datos...")
+print("Tokenizando datos...")
 dataset = Dataset.from_pandas(df)
-dataset = dataset.map(tokenize_function, batched=True)
-print("✅ Tokenización completada.")
-
-# Fase 5: Preparación del dataset
 dataset = dataset.rename_column("CIE_ASIGNADO_COD", "labels")
+dataset = dataset.map(tokenize_function, batched=True)
 dataset.set_format("torch", columns=["input_ids", "attention_mask", "labels"])
+print("Tokenización completada.")
+print("Revisión rápida de labels tokenizados:", dataset[:5]["labels"])
 
-# Fase 6: División en entrenamiento y evaluación
-print("🧪 Dividiendo datos en entrenamiento y prueba...")
-split = dataset.train_test_split(test_size=0.2)
+print("Dividiendo datos en entrenamiento y prueba...")
+split = dataset.train_test_split(test_size=0.2, seed=42)
 train_dataset = split["train"]
 eval_dataset = split["test"]
-print(f"✅ Train: {len(train_dataset)}, Test: {len(eval_dataset)}")
+print(f"Train: {len(train_dataset)}, Test: {len(eval_dataset)}")
 
-# Fase 7: Definición y configuración del modelo
-print("⚙️ Cargando modelo BERT base...")
-# Multilingüe (español + catalán):
-model = BertForSequenceClassification.from_pretrained('C:\\DADES\\DOCLIB\\CIE10\\modelos\\bert-base-multilingual-cased', num_labels=len(label_encoder.classes_))
-
+print("Cargando modelo BERT base...")
+model = BertForSequenceClassification.from_pretrained(
+    MODEL_PATH,
+    num_labels=num_labels
+)
 
 training_args = TrainingArguments(
     output_dir="./cie10_model",
     learning_rate=2e-5,
-    per_device_train_batch_size=16,
-    per_device_eval_batch_size=16,
-    num_train_epochs=5,
+    per_device_train_batch_size=32,
+    per_device_eval_batch_size=32,
+    num_train_epochs=3,
     weight_decay=0.01,
     logging_dir='./logs',
-    logging_steps=10)
+    logging_steps=10,
+    save_strategy="no",  # no guardar checkpoints
+    logging_strategy="epoch"  # opcional: logs solo por época
+)
 
-# Fase 8: Definición de métricas
 def compute_metrics(pred):
     labels = pred.label_ids
     preds = pred.predictions.argmax(-1)
     acc = accuracy_score(labels, preds)
     return {"accuracy": acc}
 
-# Fase 9: Entrenamiento del modelo
-print("🏋️‍♂️ Entrenando modelo...")
+print("Entrenando modelo...")
 trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
-    compute_metrics=compute_metrics  # Añadir métricas
+    compute_metrics=compute_metrics
 )
 
 trainer.train()
-print("✅ Entrenamiento finalizado.")
+print("Entrenamiento finalizado.")
 
-# Fase 10: Evaluación final
 eval_results = trainer.evaluate()
-print(f"📊 Resultados de evaluación final: {eval_results}")
+print(f"Resultados de evaluación final: {eval_results}")
 
-# Fase 11: Guardado del modelo
-print("💾 Guardando modelo...")
+print("Guardando modelo...")
 model.save_pretrained('./cie10_model')
 tokenizer.save_pretrained('./cie10_model')
 joblib.dump(label_encoder, './cie10_model/label_encoder.pkl')
-print("🎉 Todo listo. Modelo guardado en './cie10_model'.")
+print("Todo listo. Modelo guardado en './cie10_model'.")
