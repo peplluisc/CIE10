@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+  <info>
+    <name>Revision_incomplatibilidad</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description/>
+    <extended_description/>
+    <pipeline_version/>
+    <pipeline_type>Normal</pipeline_type>
+    <parameters>
+    </parameters>
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <created_user>-</created_user>
+    <created_date>2025/05/26 11:08:45.428</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2025/05/26 11:08:45.428</modified_date>
+  </info>
+  <notepads>
+    <notepad>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorred>201</backgroundcolorred>
+      <bordercolorblue>90</bordercolorblue>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorred>14</bordercolorred>
+      <fontbold>N</fontbold>
+      <fontcolorblue>90</fontcolorblue>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorred>14</fontcolorred>
+      <fontitalic>N</fontitalic>
+      <fontname>Segoe UI</fontname>
+      <fontsize>9</fontsize>
+      <height>90</height>
+      <xloc>675</xloc>
+      <yloc>214</yloc>
+      <note>SELECT c.IN_JUICIO_CLINICO
+FROM ZM.ZT_DOCLIB_CIE10_CODIFICAR c
+WHERE CODIFICADO_CIE_CODIGO IS NULL 
+AND EXISTS (SELECT 1 FROM ZM.ZT_DOCLIB_CIE10_CACHE zdcc 
+WHERE zdcc.DESCRIPCION =c.IN_JUICIO_CLINICO )</note>
+      <width>354</width>
+    </notepad>
+  </notepads>
+  <order>
+    <hop>
+      <from>Uno con cie otro null</from>
+      <to>Group by</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <transform>
+    <name>Group by</name>
+    <type>GroupBy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <add_linenr>N</add_linenr>
+    <all_rows>N</all_rows>
+    <directory>${java.io.tmpdir}</directory>
+    <fields>
+      <field>
+        <aggregate>Total</aggregate>
+        <subject>CODIFICADO_CIE_CODIGO</subject>
+        <type>COUNT_DISTINCT</type>
+      </field>
+      <field>
+        <aggregate>Epiosdio1</aggregate>
+        <subject>IN_ID_EPISODIO</subject>
+        <type>MIN</type>
+      </field>
+      <field>
+        <aggregate>Epiosdio2</aggregate>
+        <subject>IN_ID_EPISODIO</subject>
+        <type>MAX</type>
+      </field>
+      <field>
+        <aggregate>Codificado1</aggregate>
+        <subject>CODIFICADO_CIE_CODIGO</subject>
+        <type>MIN</type>
+      </field>
+      <field>
+        <aggregate>Codificado2</aggregate>
+        <subject>CODIFICADO_CIE_CODIGO</subject>
+        <type>MAX</type>
+      </field>
+    </fields>
+    <give_back_row>N</give_back_row>
+    <group>
+      <field>
+        <name>IN_JUICIO_CLINICO</name>
+      </field>
+    </group>
+    <ignore_aggregate>N</ignore_aggregate>
+    <prefix>grp</prefix>
+    <attributes/>
+    <GUI>
+      <xloc>592</xloc>
+      <yloc>352</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Misma descripción diferente codigo</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>ZM</connection>
+    <execute_each_row>N</execute_each_row>
+    <limit>0</limit>
+    <sql>SELECT IN_JUICIO_CLINICO,
+       MIN(CODIFICADO_CIE_CODIGO) AS min_codigo,
+       MAX(CODIFICADO_CIE_CODIGO) AS max_codigo,
+       COUNT(DISTINCT CODIFICADO_CIE_CODIGO) AS cantidad_codigos
+FROM ZM.ZT_DOCLIB_CIE10_CODIFICAR
+GROUP BY IN_JUICIO_CLINICO
+HAVING COUNT(DISTINCT CODIFICADO_CIE_CODIGO) > 1</sql>
+    <variables_active>N</variables_active>
+    <attributes/>
+    <GUI>
+      <xloc>368</xloc>
+      <yloc>224</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Uno con cie otro null</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>ZM</connection>
+    <execute_each_row>N</execute_each_row>
+    <limit>0</limit>
+    <sql>SELECT 
+    IN_JUICIO_CLINICO,     IN_ID_EPISODIO,
+    NVL(CODIFICADO_CIE_CODIGO, 'no encontrado') AS CODIFICADO_CIE_CODIGO
+FROM ZM.ZT_DOCLIB_CIE10_CODIFICAR
+WHERE 
+IN_JUICIO_CLINICO &lt;&gt;',' and
+IN_JUICIO_CLINICO &lt;&gt;'.' and
+IN_JUICIO_CLINICO IN (
+    SELECT IN_JUICIO_CLINICO
+    FROM ZM.ZT_DOCLIB_CIE10_CODIFICAR
+    GROUP BY IN_JUICIO_CLINICO
+    HAVING 
+        COUNT(CODIFICADO_CIE_CODIGO) > 0
+        AND
+        COUNT(CASE WHEN CODIFICADO_CIE_CODIGO IS NULL THEN 1 END) > 0
+)
+ORDER BY IN_JUICIO_CLINICO, IN_ID_EPISODIO, CODIFICADO_CIE_CODIGO NULLS LAST
+</sql>
+    <variables_active>N</variables_active>
+    <attributes/>
+    <GUI>
+      <xloc>368</xloc>
+      <yloc>352</yloc>
+    </GUI>
+  </transform>
+  <transform_error_handling>
+  </transform_error_handling>
+  <attributes/>
+</pipeline>
